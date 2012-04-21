@@ -7,7 +7,7 @@ require 'json'
 
 # TODO read from config 
 DB_NAME = 'galaxy_sexy_test'
-TABLE_NAME = 'wave_test'
+TABLE_NAME = 'wave_test2'
 
 # TODO read from config
 KEYS = ['timeStamp',
@@ -51,7 +51,11 @@ post '/brain' do
 
     dic = {}
     KEYS.each_with_index{|key, i|
-        dic[key] = vals[i].strip
+        val = vals[i].strip
+        if val =~ /^\d+$/
+            val = val.to_i
+        end
+        dic[key] = val
     }
 
     puts dic.to_s
@@ -61,5 +65,5 @@ post '/brain' do
     conn = Mongo::Connection.new('localhost', 27017, :pool_size => 10, :pool_timeout => 15)
     table = conn.db(DB_NAME)[TABLE_NAME]
     table.insert(dic)
-    return "sucess"
+    return "success"
 end
