@@ -1,21 +1,25 @@
-		#!/usr/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use LWP::UserAgent;
 use UUID::Random;
+use constant file_username => ".serial-client.username";
 
 my $comport = "/dev/ttyS6";
+
 my $posturl = 'http://sushi.yuiseki.net:4444/brain';
 my $userid ;
+my $DEBUG=0;
 
-my $ua = new LWP::UserAgent;
 
 $posturl = $ARGV[0] || $posturl;
 
 
-my $DEBUG=0;
-
 $userid = getusername();
+
+
+
+my $ua = new LWP::UserAgent;
 
 open(FH, "<", $comport) or die("cannot open ", $comport);
 
@@ -52,7 +56,7 @@ while(<FH>)
 sub
 getusername
 {
-  my $file_username = ".serial-client.username";
+  my $file_username = file_username;
   my $username;
 
   if(-f $file_username)
