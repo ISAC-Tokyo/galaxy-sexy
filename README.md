@@ -2,6 +2,5 @@ galaxy-sexy
 ===========
 
 sushi
-
-hoge
+-----
 
