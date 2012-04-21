@@ -1,7 +1,10 @@
 *.gem
 *.rbc
+*.swp
 .bundle
 .config
+.gitorg*
+.gitignore
 coverage
 InstalledFiles
 lib/bundler/man
