@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'rack'
 require 'sinatra'
+require 'sinatra/reloader'
 require 'json'
 require 'serialport'
 
@@ -13,12 +14,10 @@ configure do
 end
 
 get '/brain' do
-    # read brain data from db
-    line = settings.sp.gets
-    puts line
-    return Time.now.to_i.to_s+','+line
+    # TODO JSON
+    return "1335010152,200,0,0,83584,1017731,134968,212397,137195,349592,181972,1182824"
 end
 
 post '/brain' do
-    # write brain data from db
+    puts request.body.read
 end
