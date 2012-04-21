@@ -8,7 +8,7 @@ use constant file_username => ".serial-client.username";
 my $comport = "/dev/ttyS6";
 
 my $posturl = 'http://sushi.yuiseki.net:4444/brain';
-my $userid ;
+my $userid;
 my $DEBUG=0;
 
 
@@ -18,16 +18,22 @@ $posturl = $ARGV[0] || $posturl;
 $userid = getusername();
 
 
-
 my $ua = new LWP::UserAgent;
 
 open(FH, "<", $comport) or die("cannot open ", $comport);
+
 
 
 while(<FH>)
 {
   if(/ERROR/){ next; }
   my $line = $_;
+  my @elements = split(/,/, $line);
+
+  if(100 < $elements[0]){ 
+    print "Low quality signal: ", $line , "\n";
+    next;
+  }
 
   chop $line; 
   my $postdata = sprintf("%ld,%s,%s", time(), $userid, $line);
@@ -72,7 +78,7 @@ getusername
     open(FH, ">" . $file_username) or die($file_username);
     print FH $uuid;
     close(FH);
-	return $uuid;
+    return $uuid;
   }
 }
 
