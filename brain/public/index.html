@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Brain Charts</title>
+    <script type="text/javascript" src="smoothie.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <style type="text/css">
+      body { font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <ul id="colors" style="height:80px;background:black;"></ul>
+    <br style="clear:both;" />
+    <canvas id="chart" width="1000" height="600"></canvas>
+    <script type="text/javascript">
+      var brains = ['deltaWave',
+                    'thetaWave',
+                    'lowAlphaWave', 'highAlphaWave',
+                    'lowBetaWave', 'highBetaWave',
+                    'lowGammaWave','midGummaWave'];
+      var colors = ['blue',
+                    'aqua',
+                    'red', 'red',
+                    'gray', 'gray',
+                    'brack', 'brack'];
+
+      var feelings = ['sleep',
+                    'meditation',
+                    'relax', 'relax',
+                    'centered', 'centered',
+                    'fastest ', 'fastest'];
+
+      $.each(colors, function(i, val){
+          $("#colors").append("<li style='float:left;margin:10px;color:"+val+";'>"+brains[i]+" : "+feelings[i]+"</li>");
+      });
+
+      var brainWavesTimeSeries = {};
+      $.each(brains, function(i, val){
+          brainWavesTimeSeries[val] = new TimeSeries();
+      });
+      var getBrainWave = function(){
+          var line = $.ajax({
+                url: "brain",
+                async: false
+                }).responseText;
+          var csv = line.split(",");
+          return csv;
+      };
+      setInterval(function() {
+          var csv = getBrainWave();
+          if (csv.length > 2) {
+              $.each(brains, function(i, val){
+                //var value = Math.floor( Math.random() * 10000 * i );
+                var now = new Date().getTime();
+                if( i == 0 ) {
+                  var value = csv[i+1]*1000;
+                }
+                var value = csv[i+1];
+                brainWavesTimeSeries[val].append(now, value);
+              });
+          }
+      }, 1000);
+
+      var smoothie = new SmoothieChart({ minValue: 0.0, maxValue: 100000.0, millisPerPixel: 20,
+          grid: { strokeStyle: '#555555', lineWidth: 1, millisPerLine: 1000, verticalSections: 4 }});
+      $.each(brains, function(i, val){
+            console.log(colors[i]);
+            smoothie.addTimeSeries(brainWavesTimeSeries[val],
+                { strokeStyle: colors[i], fillStyle: 'rgba(0, 0, 0, 0)', lineWidth: 3 }
+            );
+      });
+      smoothie.streamTo(document.getElementById('chart'), 1000);
+    </script>
+  </body>
+<html>
