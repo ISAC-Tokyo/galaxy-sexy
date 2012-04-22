@@ -33,14 +33,14 @@ while(<FH>)
   my @elements = split(/,/, $line);
   chop $line; 
 
-  if(100 < $elements[0]){ 
+  if(79< $elements[0]){ 
     print "Low quality signal: ", $line , "\n";
     next;
   }
 
   my $postdata = sprintf("%ld,%s,%s", time(), $userid, $line);
 
-  my $req = new HTTP::Request(POST => $posturl . "brain");
+  my $req = new HTTP::Request(POST => $posturl );
   $req->content_type("text/csv");
   $req->content($postdata);
 
