@@ -7,15 +7,16 @@ use constant file_username => ".serial-client.username";
 
 my $DEBUG=0;
 
-my $comport = "/dev/ttyS6";
-my $posturl = 'http://sushi.yuiseki.net:4444/brain';
+my $comport   = "/dev/ttyS6";
+my $posturl   = 'http://sushi.yuiseki.net:4444/brain';
+my $viewerurl = 'http://sushi.yuiseki.net:4567/';
+
 my $userid  = getusername();
 
 
 $posturl = $ARGV[0] || $posturl;
 
-printf("\033[1;32mhttp://sushi.yuiseki.net:4444/brain?userid=%s&\033[0m\n\n", &urlencode($userid));
-
+printf("\033[1;32m%s?userid=%s&\033[0m\n\n", $viewerurl, &urlencode($userid));
 
 
 
@@ -39,7 +40,7 @@ while(<FH>)
 
   my $postdata = sprintf("%ld,%s,%s", time(), $userid, $line);
 
-  my $req = new HTTP::Request(POST => $posturl);
+  my $req = new HTTP::Request(POST => $posturl . "brain");
   $req->content_type("text/csv");
   $req->content($postdata);
 
