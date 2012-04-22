@@ -5,37 +5,38 @@ use LWP::UserAgent;
 use UUID::Random;
 use constant file_username => ".serial-client.username";
 
-my $comport = "/dev/ttyS6";
-
-my $posturl = 'http://sushi.yuiseki.net:4444/brain';
-my $userid;
 my $DEBUG=0;
+
+my $comport = "/dev/ttyS6";
+my $posturl = 'http://sushi.yuiseki.net:4444/brain';
+my $userid  = getusername();
 
 
 $posturl = $ARGV[0] || $posturl;
 
+printf("\033[1;32mhttp://sushi.yuiseki.net:4444/brain?userid=%s&\033[0m\n\n", &urlencode($userid));
 
-$userid = getusername();
+
+
+
+
 
 
 my $ua = new LWP::UserAgent;
-
 open(FH, "<", $comport) or die("cannot open ", $comport);
-
-
 
 while(<FH>)
 {
   if(/ERROR/){ next; }
   my $line = $_;
   my @elements = split(/,/, $line);
+  chop $line; 
 
   if(100 < $elements[0]){ 
     print "Low quality signal: ", $line , "\n";
     next;
   }
 
-  chop $line; 
   my $postdata = sprintf("%ld,%s,%s", time(), $userid, $line);
 
   my $req = new HTTP::Request(POST => $posturl);
@@ -80,6 +81,16 @@ getusername
     close(FH);
     return $uuid;
   }
+}
+
+
+sub
+urlencode($)
+{
+  my ($str) = @_;
+  $str =~ s/([^\w ])/'%'.unpack('H2', $1)/eg;
+  $str =~ tr/ /+/;
+  return $str;
 }
 
 
